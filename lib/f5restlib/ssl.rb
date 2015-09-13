@@ -1,10 +1,10 @@
 # ssl.rb
 # Define classes to encapsulate the F5 SSL objects
-# @author Daniel Fox
-module F5RestLib
+# @author FoxBoxPDX
+#module F5RestLib
   class ClientSSLProfile
     include Her::Model
-    uses_api F5RestLib::API
+    uses_api F5RestLib::api
     attributes :name, :partition, :cert, :key
     validates :name, presence: true
     validates :partition, presence: true
@@ -15,7 +15,7 @@ module F5RestLib
 
   class Key
     include Her::Model
-    uses_api F5RestLib::API
+    uses_api F5RestLib::api
     attributes :name, :partition
     validates :name, presence: true
     validates :partition, presence: true
@@ -24,10 +24,10 @@ module F5RestLib
 
   class Cert
     include Her::Model
-    uses_api F5RestLib::API
+    uses_api F5RestLib::api
     attributes :name, :partition
     validates :name, presence: true
     validates :partition, presence: true
     collection_path "/mgmt/tm/sys/crypto/cert"
   end
-end
+#end
