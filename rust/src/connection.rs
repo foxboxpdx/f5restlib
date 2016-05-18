@@ -36,10 +36,7 @@ impl F5Connection {
         let client = Client::new();
         let full_uri = self.hostname.clone() + uri + "?expandSubcollections=true";
         let headers = self.set_headers();
-        let res = client.get(&full_uri)
-            .headers(headers)
-            .send().unwrap();
-        res
+        client.get(&full_uri).headers(headers).send().unwrap()
     }
 /*
     pub fn post<'a, T>(&self, uri: &str, payload: &T) -> Response where T: Encodable { 

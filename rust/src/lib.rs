@@ -7,6 +7,7 @@ mod tests {
 
 // Crates
 extern crate hyper;
+extern crate core;
 //extern crate rustc_serialize;
 extern crate serde;
 extern crate serde_json;

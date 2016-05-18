@@ -76,7 +76,6 @@ pub struct CertRoot {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct F5Cert {
     pub name: String,
-    pub partition: String,
     #[serde(rename="apiRawValues")]
     pub raw: HashMap<String, String>,
     #[serde(rename="commonName")]
@@ -91,7 +90,6 @@ pub struct KeyRoot {
 #[derive(Deserialize, Debug)]
 pub struct F5Key {
     pub name: String,
-    pub partition: String,
     #[serde(rename="keySize")]
     pub key_size: String,
     #[serde(rename="keyType")]
