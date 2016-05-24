@@ -6,7 +6,7 @@ pub struct VirtualRoot {
     pub items: Vec<F5Virtual>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct F5Virtual {
     pub name: String,
     pub partition: String,
@@ -18,11 +18,11 @@ pub struct F5Virtual {
     pub profiles: Profiles
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct Profiles {
     pub items: Vec<VipProfile>
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct VipProfile {
     pub name: String,
     pub partition: String,
@@ -35,7 +35,7 @@ pub struct PoolRoot {
     pub items: Vec<F5Pool>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct F5Pool {
     pub name: String,
     pub partition: String,
@@ -46,11 +46,11 @@ pub struct F5Pool {
     pub members: Members
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct Members {
     pub items: Vec<PoolMember>
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct PoolMember {
     pub name: String
 }
@@ -60,7 +60,7 @@ pub struct PoolMember {
 pub struct ClientRoot {
     pub items: Vec<F5ClientSSL>
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct F5ClientSSL {
     pub name: String,
     pub partition: String,

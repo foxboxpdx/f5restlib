@@ -8,5 +8,36 @@ impl F5ClientSSL {
                       cert: c.to_string(),
                       key: k.to_string() }
     }
+
+    pub fn from_yaml(data: &str) -> bool {
+        true
+    }
+
+    pub fn create(&self, conn: &F5Connection) -> bool {
+        true
+    }
+
+    pub fn delete(&self, conn: &F5Connection) -> bool {
+        true
+    }
+
+    pub fn fetch(conn: &F5Connection, partition: &str, name: &str) -> bool {
+        true
+    }
+
+    pub fn fetch_all(conn: &F5Connection) -> bool {
+        true
+    }
+
+    pub fn to_yaml() {
+    }
+
+    fn define() {
+    }
+
+    fn validate_rest_call(&self, response: &str, action: &str, conn: &F5Connection) -> bool {
+        true
+    }
+
 }
 
