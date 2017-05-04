@@ -1,20 +1,16 @@
 use connection::F5Connection;
 use types::F5Pool;
 use types::PoolMember;
-use types::Members;
+use types::MembersReference;
 
 impl F5Pool {
-    pub fn new(n: &str, p: &str, lbm: &str, mon: &str, mem: Members) -> F5Pool {
+    pub fn new(n: &str, p: &str, d: &str, lbm: &str, mon: &str, mem: MembersReference) -> F5Pool {
         F5Pool { name: n.to_string(),
                  partition: p.to_string(),
+                 description: Some(d.to_string()),
                  lbmode: lbm.to_string(),
                  monitor: mon.to_string(),
                  members: mem }
-    }
-
-    pub fn from_yaml(data: &str) -> bool {
-        // This should actually return an array of F5Pools
-        true
     }
 
     pub fn create(&self, conn: &F5Connection) -> bool {
@@ -39,9 +35,6 @@ impl F5Pool {
         true
     }
 
-    pub fn to_yaml() {
-    }
-
     fn define() {
         // Is this needed?
     }
@@ -53,14 +46,15 @@ impl F5Pool {
 }
 
 impl PoolMember {
-    pub fn new(n: &str) -> PoolMember {
-        PoolMember { name: n.to_string() }
+    pub fn new(n: &str, p: &str) -> PoolMember {
+        PoolMember { name: n.to_string(),
+                     partition: p.to_string() }
     }
 }
 
-impl Members {
-    pub fn new(i: Vec<PoolMember>) -> Members {
-        Members { items: i }
+impl MembersReference {
+    pub fn new(i: Vec<PoolMember>) -> MembersReference {
+        MembersReference { items: i }
     }
 }
 

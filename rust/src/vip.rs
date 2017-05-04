@@ -1,20 +1,17 @@
-use std::collections::HashMap;
 use connection::F5Connection;
 use types::F5Virtual;
-use types::Profiles;
+use types::ProfilesReference;
+use types::Snat;
 
 impl F5Virtual {
-    pub fn new(n: &str, pt: &str, d: &str, pl: &str, sat: HashMap<String, String>, pf: Profiles) -> F5Virtual {
+    pub fn new(n: &str, pt: &str, d: &str, ds: &str, pl: &str, sat: Snat, pf: ProfilesReference) -> F5Virtual {
         F5Virtual { name: n.to_string(),
                     partition: pt.to_string(),
                     destination: d.to_string(),
+                    description: Some(ds.to_string()),
                     pool: Some(pl.to_string()),
                     snat: sat,
                     profiles: pf }
-    }
-
-    pub fn from_yaml(data: &str) -> bool {
-        true
     }
 
     pub fn create(&self, conn: &F5Connection) -> bool {
@@ -40,19 +37,6 @@ impl F5Virtual {
 
     pub fn fetch_all(conn: &F5Connection) -> bool {
         // This will actually return an array of F5Virtuals
-        true
-    }
-
-    pub fn fetch_addrs(conn: &F5Connection) -> bool {
-        // This will return an array of IP/ports
-        true
-    }
-
-    pub fn to_yaml() {
-    }
-
-    fn snatpool(conn: &F5Connection) -> bool {
-        // This will return a snatpool hashmap
         true
     }
 

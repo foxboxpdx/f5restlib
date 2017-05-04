@@ -4,13 +4,14 @@ mod tests {
     fn it_works() {
     }
 }
+#[macro_use] extern crate lazy_static;
+#[macro_use] extern crate serde_derive;
 
-// Crates
 extern crate hyper;
 extern crate core;
-//extern crate rustc_serialize;
 extern crate serde;
 extern crate serde_json;
+extern crate regex;
 
 // F5 Modules
 pub mod types;

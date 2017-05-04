@@ -1,13 +1,14 @@
+extern crate serde;
+extern crate serde_json;
 //use hyper::Url;
 use hyper::Client;
 use hyper::client::Response;
 use hyper::header::*;
 use hyper::mime::Mime;
-//use rustc_serialize::{Encodable, json};
-//use std::io::prelude::*;
-//use std::fs::File;
-//use std::path::Path;
-//use std::collections::HashMap;
+use std::io::prelude::*;
+use std::fs::File;
+use std::path::Path;
+use std::collections::HashMap;
 //use std::io::Error;
 
 #[derive(Debug)]
@@ -36,11 +37,12 @@ impl F5Connection {
         let client = Client::new();
         let full_uri = self.hostname.clone() + uri + "?expandSubcollections=true";
         let headers = self.set_headers();
+        /* Make the caller responsible for matching(ok/err) here */
         client.get(&full_uri).headers(headers).send().unwrap()
     }
-/*
-    pub fn post<'a, T>(&self, uri: &str, payload: &T) -> Response where T: Encodable { 
-        let body: String = json::encode(payload).unwrap();
+
+    pub fn post<'a, T>(&self, uri: &str, payload: &T) -> Response where T: serde::Serialize { 
+        let body = serde_json::to_string(&payload).unwrap();
         let client = Client::new();
         let full_uri = self.hostname.clone() + uri;
         let headers = self.set_headers();
@@ -48,8 +50,8 @@ impl F5Connection {
         res
     }
 
-    pub fn put<'a, T>(&self, uri: &str, payload: &T) -> Response where T: Encodable {
-        let body: String = json::encode(payload).unwrap();
+    pub fn put<'a, T>(&self, uri: &str, payload: &T) -> Response where T: serde::Serialize {
+        let body = serde_json::to_string(&payload).unwrap();
         let client = Client::new();
         let full_uri = self.hostname.clone() + uri;
         let headers = self.set_headers();
@@ -70,11 +72,17 @@ impl F5Connection {
         payload.insert("command", "run");
         payload.insert("utilCmdArgs","-c 'mkdir /var/config/rest/downloads/tmp'");
         //let mut body: String = json::encode(&payload).unwrap();
-        let body: String = "foo".to_string();
+        let body = serde_json::to_string(&payload).unwrap();
         let client = Client::new();
         let mut full_uri: String = self.hostname.clone() + "/mgmt/tm/util/bash";
         let headers = self.set_headers();
-        let res = client.post(&full_uri).body(&body).headers(headers).send().unwrap();
+        match client.post(&full_uri).body(&body).headers(headers).send() {
+            Ok(_) => {},
+            Err(e)  => {
+                println!("Error making upload dir: {}", e);
+                return false
+            }
+        }
         
         let path = Path::new(filename);
         let file = path.file_name().unwrap().to_str().unwrap(); // *cry*
@@ -85,10 +93,16 @@ impl F5Connection {
         let ohead = self.octet_headers(buffer.len() as u64);
         full_uri.clear();
         full_uri = self.hostname.clone() + "/mgmt/shared/file-transfer/uploads/" + file;
-        let res2 = client.post(&full_uri).body(&buffer).headers(ohead).send().unwrap();
+        match client.post(&full_uri).body(&buffer).headers(ohead).send() {
+            Ok(_) => {},
+            Err(e) => {
+                println!("Error uploading cert file: {}", e);
+                return false
+            }
+        }
         true
     }
-*/
+
     pub fn set_headers(&self) -> Headers {
         let mut headers = Headers::new();
         headers.set(
