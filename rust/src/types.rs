@@ -113,3 +113,16 @@ pub struct F5Key {
     #[serde(rename="keyType")]
     pub key_type: String
 }
+
+// Device-groups
+#[derive(Deserialize, Debug)]
+pub struct DeviceGroupRoot {
+    pub kind: String,
+    pub items: Vec<F5DeviceGroup>
+}
+#[derive(Deserialize, Debug)]
+pub struct F5DeviceGroup {
+    pub name: String,
+    #[serde(rename="type")]
+    pub dgtype: String
+}

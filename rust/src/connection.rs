@@ -9,28 +9,90 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
 use std::collections::HashMap;
+use serde_json::Value;
+use types::DeviceGroupRoot;
 //use std::io::Error;
 
 #[derive(Debug)]
 pub struct F5Connection {
     username: String,
     password: String,
-    hostname: String
+    hostname: String,
+    basename: String
 }
 
 impl F5Connection {
     pub fn new(u: &str, p: &str, h: &str) -> F5Connection {
+        let b = str::replace(h, "https://", "");
         F5Connection { username: u.to_string(),
                        password: p.to_string(),
-                       hostname: h.to_string() }
+                       hostname: h.to_string(),
+                       basename: b.to_string() }
     }
 
     pub fn check_connection(&self) -> bool {
+        let client = Client::new();
+        let uri = self.hostname.clone() + "/mgmt/tm/cm/device/" + self.basename.as_str();
+        let headers = self.set_headers();
+        let mut res = client.get(&uri).headers(headers).send().unwrap();
+        if res.status.is_success() {
+            let mut body = String::new();
+            res.read_to_string(&mut body).expect("Error reading response");
+            let parsed: Value = serde_json::from_str(body.as_str()).expect("Can't parse response");
+            if parsed["failoverState"] == "standby" {
+                println!("{} is not the active F5 device", self.basename);
+                return false
+            }
+        } else {
+            println!("Error retrieving device status");
+            return false
+        }
         true
     }
 
     pub fn sync(&self) -> bool {
-        true
+        let client = Client::new();
+        // First query will get the name of the sync-failover group
+        let mut group = String::new();
+        let mut uri = self.hostname.clone() + "/mgmt/tm/cm/device-group/";
+        let headers = self.set_headers();
+        let mut res = client.get(&uri).headers(headers).send().unwrap();
+        if !res.status.is_success() {
+            println!("Error retrieving device-group data");
+            return false
+        }
+        let mut body = String::new();
+        res.read_to_string(&mut body).expect("Error reading response");
+        let dgr: DeviceGroupRoot = serde_json::from_str(&body).expect("Error converting JSON");
+        // Iterate through the DGs looking for type=sync-failover
+        for g in &dgr.items {
+            if g.dgtype == "sync-failover" {
+                group = g.name.clone();
+                break;
+            }
+        }
+        if group.is_empty() {
+            println!("Could not find a sync-failover group");
+            return false
+        }
+        // Now call the sync operation on this group
+        let cmd = format!("config-sync to-group {}", group);
+        let mut payload = HashMap::new();
+        payload.insert("command", "run");
+        payload.insert("utilCmdArgs", &cmd);
+        let outgoing = serde_json::to_string(&payload).unwrap();
+        uri = self.hostname.clone() + "/mgmt/tm/cm/";
+        let headers = self.set_headers();
+        match client.post(&uri).body(&outgoing).headers(headers).send() {
+            Ok(_) => {
+                println!("Called sync ok");
+                return true
+            },
+            Err(e) => {
+                println!("Error calling sync: {}", e);
+                return false
+            }
+        }
     }
 
     pub fn get(&self, uri: &str) -> Response {
