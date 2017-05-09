@@ -1,2 +1,2 @@
 # f5restlib
-Ruby library for interacting with the F5 BigIP RESTful interface
+Rust library for interacting with F5 BigIP REST interface.
