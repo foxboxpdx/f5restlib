@@ -80,7 +80,7 @@ impl F5Connection {
         let mut payload = HashMap::new();
         payload.insert("command", "run");
         payload.insert("utilCmdArgs", &cmd);
-        let outgoing = serde_json::to_string(&payload).unwrap();
+        let outgoing = serde_json::to_string(&payload).unwrap(); 
         uri = self.hostname.clone() + "/mgmt/tm/cm/";
         let headers = self.set_headers();
         match client.post(&uri).body(&outgoing).headers(headers).send() {
